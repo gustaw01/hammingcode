@@ -7,11 +7,22 @@ def to_binary(number):
     return binary
 
 
+def to_decimal(binary):
+    binary.reverse()
+    number = 0
+    j = 0
+    for i in binary:
+        if i == 1:
+            number += 2**j
+        j += 1
+    return number
+
+
 def code(num: int):
+    control_bits = []
     coded = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     bnum = to_binary(num)
     bnum.reverse()
-    print(len(bnum))
     # kolejne potęgi 2
     k = 0
     # iterator kodowanej liczby
@@ -23,7 +34,32 @@ def code(num: int):
             j += 1
         else:
             k += 1
-    print(bnum)
-    print(coded)
 
+    def __XOR(*args):
+        ones = args.count(1)
+        if ones % 2 != 0:
+            return 1
+        return 0
+
+    for i in range(len(coded)):
+        if i == 0:
+            coded[i] = __XOR(bnum[0], bnum[1], bnum[3], bnum[4], bnum[6])
+            control_bits.append(coded[i])
+        elif i == 1:
+            coded[i] = __XOR(bnum[0], bnum[2], bnum[3], bnum[5], bnum[6])
+            control_bits.append(coded[i])
+        elif i == 3:
+            coded[i] = __XOR(bnum[1], bnum[2], bnum[3], bnum[7])
+            control_bits.append(coded[i])
+        elif i == 7:
+            coded[i] = __XOR(bnum[4], bnum[5], bnum[6], bnum[7])
+            control_bits.append(coded[i])
+
+    return to_decimal(coded), control_bits
+
+
+coded_number, control_bits = code(154)
+
+print(coded_number)
+print(control_bits)
 
